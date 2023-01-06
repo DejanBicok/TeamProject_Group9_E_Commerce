@@ -1,0 +1,103 @@
+<?php
+session_start();
+require_once '../components/db_connect.php';
+if (isset($_SESSION['USER'])) {
+    header("Location: ../user_panel/index_user.php");
+    exit;
+} 
+
+if (!isset($_SESSION['USER']) && !isset($_SESSION['ADMIN'])) {
+    header("Location: ../login.php");
+    exit;
+}
+//get products name
+$id=$_GET['id'];
+$sql_product = "SELECT * FROM products WHERE id = $id";
+$result_product = mysqli_query($connect,$sql_product);
+if ($result_product->num_rows > 0) {
+    $rowprod = $result_product->fetch_array(MYSQLI_ASSOC);}
+//print products reviewa
+$sql_reviews = "SELECT * FROM products_reviews WHERE fk_product = $id";
+$result_reviews = mysqli_query($connect,$sql_reviews);
+$tbody = "";
+
+if ($result_reviews->num_rows > 0) {
+    while ($row = $result_reviews->fetch_array(MYSQLI_ASSOC)) {
+       
+                $tbody .= "<tr>
+                    <td>" . $row['message'] . "</td>
+                    <td>" . $row['fk_product'] . "</td>
+                    <td>" . $row['fk_user'] ." </td>
+                    <td>" . $row['star'] ."⭐ </td>
+                    <td>
+                    <a href='delete_reviews.php?id=" . $row['id'] . "'><button class='btn btn-danger btn-sm' type='button'>Delete</button></a>
+                    </td>
+                 </tr>";
+            }
+        } else {
+            $tbody = "<tr><td colspan='5'><center>No Reviews Available </center></td></tr>";
+        }
+        mysqli_close($connect); 
+        
+        ?>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php require_once "../components/boot.php"?>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://kit.fontawesome.com/49748d0fd6.js" crossorigin="anonymous"></script>
+    <title>Welcome - <?php /* echo $row['first_name']; */ ?></title>
+    <style type="text/css">
+        .img-thumbnail {
+            width: 70px !important;
+            height: 70px !important;
+        }
+
+        td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        tr {
+            text-align: center;
+        }
+
+        .userImage {
+            width: 100px;
+            height: auto;
+        }
+        #back{
+            display: block;
+            margin: auto;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="text-center">reviews for the product : <?= $rowprod['name'] ?></h1>
+    <table class='table table-striped'>
+                    <thead class='table-success'>
+                        <tr>
+                            <th>Message</th>
+                            <th>Product</th>
+                            <th>User</th>
+                            <th>Rating</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?= $tbody ?>
+                    </tbody>
+                </table>
+     <a href="./index_admin.php"><button type="button" class="btn btn-primary" id="back">Index</button></a>
+
+                <?php require_once "../components/footer.php" ?>
+</body>
+</html>
