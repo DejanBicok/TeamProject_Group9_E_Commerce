@@ -1,9 +1,9 @@
 <?php
 
-$localhost = "173.212.235.205";
-$username = "dejancodefactory_admin";
-$password = "dejanadmin1!";
-$dbname = "dejancodefactory_teamproject";
+$localhost = "127.0.0.1";
+$username = "root";
+$password = "";
+$dbname = "fswd-teamproject_group9";
 
 // create connection
 $connect = new  mysqli($localhost, $username, $password, $dbname);
